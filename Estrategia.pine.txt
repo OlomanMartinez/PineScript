@@ -1,0 +1,453 @@
+//@version=5
+// Modified and adapted for BingX by © NomadikW
+
+indicator(title='0012_Estrategia 145 Quotex 5M', shorttitle='0012_Estrategia 145 Quotex 5M', overlay=true)
+l = input(title='period', defval=170)
+
+t1 = input.symbol(title='Ticker1', defval='BINGX:BTCUSDT')
+t2 = input.symbol(title='Ticker2', defval='BINGX:ETHUSDT')
+t3 = input.symbol(title='Ticker3', defval='BINGX:XRPUSDT')
+t4 = input.symbol(title='Ticker4', defval='BINGX:LTCUSDT')
+t5 = input.symbol(title='Ticker5', defval='BINGX:LINKUSDT')
+t6 = input.symbol(title='Ticker6', defval='BINGX:BCHUSDT')
+t7 = input.symbol(title='Ticker7', defval='BINGX:ETCUSDT')
+t8 = input.symbol(title='Ticker8', defval='BINGX:EOSUSDT')
+t9 = input.symbol(title='Ticker9', defval='BINGX:ALGOUSDT')
+t10 = input.symbol(title='Ticker10', defval='BINGX:DYDXUSDT')
+t11 = input.symbol(title='Ticker11', defval='BINGX:TRXUSDT')
+t12 = input.symbol(title='Ticker12', defval='BINGX:ADAUSDT')
+t13 = input.symbol(title='Ticker13', defval='BINGX:DOGEUSDT')
+t14 = input.symbol(title='Ticker14', defval='BINGX:DOTUSDT')
+t15 = input.symbol(title='Ticker15', defval='BINGX:UNIUSDT')
+t16 = input.symbol(title='Ticker16', defval='BINGX:FILUSDT')
+t17 = input.symbol(title='Ticker17', defval='BINGX:AAVEUSDT')
+t18 = input.symbol(title='Ticker18', defval='BINGX:DOGEUSDT')
+t19 = input.symbol(title='Ticker19', defval='BINGX:WAVESUSDT')
+t20 = input.symbol(title='Ticker20', defval='BINGX:SANDUSDT')
+t21 = input.symbol(title='Ticker21', defval='BINGX:CHZUSDT')
+t22 = input.symbol(title='Ticker22', defval='BINGX:KSMUSDT')
+t23 = input.symbol(title='Ticker23', defval='BINGX:VETUSDT')
+t24 = input.symbol(title='Ticker24', defval='BINGX:SUSHIUSDT')
+t25 = input.symbol(title='Ticker25', defval='BINGX:BNBUSDT')
+t26 = input.symbol(title='Ticker26', defval='BINGX:NEARUSDT')
+t27 = input.symbol(title='Ticker27', defval='BINGX:ATOMUSDT')
+t28 = input.symbol(title='Ticker28', defval='BINGX:MATICUSDT')
+t29 = input.symbol(title='Ticker29', defval='BINGX:SHIBUSDT')
+t30 = input.symbol(title='Ticker30', defval='BINGX:ICPUSDT')
+t31 = input.symbol(title='Ticker31', defval='BINGX:SNXUSDT')
+t32 = input.symbol(title='Ticker32', defval='BINGX:THETAUSDT')
+t33 = input.symbol(title='Ticker33', defval='BINGX:AVAXUSDT')
+t34 = input.symbol(title='Ticker34', defval='BINGX:1INCHUSDT')
+t35 = input.symbol(title='Ticker35', defval='BINGX:SOLUSDT')
+t36 = input.symbol(title='Ticker36', defval='BINGX:APEUSDT')
+t37 = input.symbol(title='Ticker37', defval='BINGX:APTUSDT')
+t38 = input.symbol(title='Ticker38', defval='BINGX:LDOUSDT')
+t39 = input.symbol(title='Ticker39', defval='BINGX:BATUSDT')
+t40 = input.symbol(title='Ticker40', defval='BINGX:ROSEUSDT')
+
+showscr = input(true, title='Mostrar Tabla')
+posX_scr = input(20, title='Tabla en el eje X')
+posY_scr = input(1, title='Tabla en el eje Y')
+
+colinput = input.string(title='Color de la Tabla', defval='White', options=['White', 'Black', 'Red', 'Green', 'Yellow', 'Blue'])
+
+col = color.gray
+if colinput == 'White'
+    col := color.white
+    col
+if colinput == 'Black'
+    col := color.black
+    col
+if colinput == 'Red'
+    col := color.red
+    col
+if colinput == 'Green'
+    col := color.green
+    col
+if colinput == 'Yellow'
+    col := color.yellow
+    col
+if colinput == 'Blue'
+    col := color.blue
+    col
+
+HMA(l) =>
+    n2ma = 2 * ta.wma(close, math.round(l / 2))
+    nma = ta.wma(close, l)
+    diff = n2ma - nma
+    sqn = math.round(math.sqrt(l))
+    n2ma1 = 2 * ta.wma(close[1], math.round(l / 2))
+    nma1 = ta.wma(close[1], l)
+    diff1 = n2ma1 - nma1
+    sqn1 = math.round(math.sqrt(l))
+    h1 = ta.wma(diff, sqn)
+    h2 = ta.wma(diff1, sqn)
+    [h1, h2]
+
+[h1, h2] = HMA(l)
+
+c = h1 > h2 ? color.green : color.red
+ma = plot(h1, color=c, linewidth=4)
+// ma2 = plot(h2, color=c, linewidth=4)
+
+// Signals
+turnGreen = h1 > h2 and h1[1] <= h2[1]
+turnRed = h1 <= h2 and h1[1] > h2[1]
+
+buy = turnGreen
+sell = turnRed
+
+
+plotshape(sell, title='Sell', style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.small)
+plotshape(buy, title='Buy', style=shape.triangleup, location=location.belowbar, color=color.new(color.green, 0), size=size.small)
+alertcondition(buy, title='Compra', message='Compra')
+alertcondition(sell, title='Venta', message='Venta')
+alertcondition(buy or sell, title='Cambio de Tendencia', message='Cambio de Tendencia')
+
+
+[h101, h201] = request.security(t1, timeframe.period, HMA(l))
+[h102, h202] = request.security(t2, timeframe.period, HMA(l))
+[h103, h203] = request.security(t3, timeframe.period, HMA(l))
+[h104, h204] = request.security(t4, timeframe.period, HMA(l))
+[h105, h205] = request.security(t5, timeframe.period, HMA(l))
+[h106, h206] = request.security(t6, timeframe.period, HMA(l))
+[h107, h207] = request.security(t7, timeframe.period, HMA(l))
+[h108, h208] = request.security(t8, timeframe.period, HMA(l))
+[h109, h209] = request.security(t9, timeframe.period, HMA(l))
+[h110, h210] = request.security(t10, timeframe.period, HMA(l))
+[h111, h211] = request.security(t11, timeframe.period, HMA(l))
+[h112, h212] = request.security(t12, timeframe.period, HMA(l))
+[h113, h213] = request.security(t13, timeframe.period, HMA(l))
+[h114, h214] = request.security(t14, timeframe.period, HMA(l))
+[h115, h215] = request.security(t15, timeframe.period, HMA(l))
+[h116, h216] = request.security(t16, timeframe.period, HMA(l))
+[h117, h217] = request.security(t17, timeframe.period, HMA(l))
+[h118, h218] = request.security(t18, timeframe.period, HMA(l))
+[h119, h219] = request.security(t19, timeframe.period, HMA(l))
+[h120, h220] = request.security(t20, timeframe.period, HMA(l))
+[h121, h221] = request.security(t21, timeframe.period, HMA(l))
+[h122, h222] = request.security(t22, timeframe.period, HMA(l))
+[h123, h223] = request.security(t23, timeframe.period, HMA(l))
+[h124, h224] = request.security(t24, timeframe.period, HMA(l))
+[h125, h225] = request.security(t25, timeframe.period, HMA(l))
+[h126, h226] = request.security(t26, timeframe.period, HMA(l))
+[h127, h227] = request.security(t27, timeframe.period, HMA(l))
+[h128, h228] = request.security(t28, timeframe.period, HMA(l))
+[h129, h229] = request.security(t29, timeframe.period, HMA(l))
+[h130, h230] = request.security(t30, timeframe.period, HMA(l))
+[h131, h231] = request.security(t31, timeframe.period, HMA(l))
+[h132, h232] = request.security(t32, timeframe.period, HMA(l))
+[h133, h233] = request.security(t33, timeframe.period, HMA(l))
+[h134, h234] = request.security(t34, timeframe.period, HMA(l))
+[h135, h235] = request.security(t35, timeframe.period, HMA(l))
+[h136, h236] = request.security(t36, timeframe.period, HMA(l))
+[h137, h237] = request.security(t37, timeframe.period, HMA(l))
+[h138, h238] = request.security(t38, timeframe.period, HMA(l))
+[h139, h239] = request.security(t39, timeframe.period, HMA(l))
+[h140, h240] = request.security(t40, timeframe.period, HMA(l))
+
+tr01 = h101 > h201 and h101[1] <= h201[1] or h101 <= h201 and h101[1] > h201[1]
+tr02 = h102 > h202 and h102[1] <= h202[1] or h102 <= h202 and h102[1] > h202[1]
+tr03 = h103 > h203 and h103[1] <= h203[1] or h103 <= h203 and h103[1] > h203[1]
+tr04 = h104 > h204 and h104[1] <= h204[1] or h104 <= h204 and h104[1] > h204[1]
+tr05 = h105 > h205 and h105[1] <= h205[1] or h105 <= h205 and h105[1] > h205[1]
+tr06 = h106 > h206 and h106[1] <= h206[1] or h106 <= h206 and h106[1] > h206[1]
+tr07 = h107 > h207 and h107[1] <= h207[1] or h107 <= h207 and h107[1] > h207[1]
+tr08 = h108 > h208 and h108[1] <= h208[1] or h108 <= h208 and h108[1] > h208[1]
+tr09 = h109 > h209 and h109[1] <= h209[1] or h109 <= h209 and h109[1] > h209[1]
+tr10 = h110 > h210 and h110[1] <= h210[1] or h110 <= h210 and h110[1] > h210[1]
+tr11 = h111 > h211 and h111[1] <= h211[1] or h111 <= h211 and h111[1] > h211[1]
+tr12 = h112 > h212 and h112[1] <= h212[1] or h112 <= h212 and h112[1] > h212[1]
+tr13 = h113 > h213 and h113[1] <= h213[1] or h113 <= h213 and h113[1] > h213[1]
+tr14 = h114 > h214 and h114[1] <= h214[1] or h114 <= h214 and h114[1] > h214[1]
+tr15 = h115 > h215 and h115[1] <= h215[1] or h115 <= h215 and h115[1] > h215[1]
+tr16 = h116 > h216 and h116[1] <= h216[1] or h116 <= h216 and h116[1] > h216[1]
+tr17 = h117 > h217 and h117[1] <= h217[1] or h117 <= h217 and h117[1] > h217[1]
+tr18 = h118 > h218 and h118[1] <= h218[1] or h118 <= h218 and h118[1] > h218[1]
+tr19 = h119 > h219 and h119[1] <= h219[1] or h119 <= h219 and h119[1] > h219[1]
+tr20 = h120 > h220 and h120[1] <= h220[1] or h120 <= h220 and h120[1] > h220[1]
+tr21 = h121 > h221 and h111[1] <= h211[1] or h121 <= h221 and h121[1] > h221[1]
+tr22 = h122 > h222 and h112[1] <= h212[1] or h122 <= h222 and h122[1] > h222[1]
+tr23 = h123 > h223 and h113[1] <= h213[1] or h123 <= h223 and h123[1] > h223[1]
+tr24 = h124 > h224 and h114[1] <= h214[1] or h124 <= h224 and h124[1] > h224[1]
+tr25 = h125 > h225 and h115[1] <= h215[1] or h125 <= h225 and h125[1] > h225[1]
+tr26 = h126 > h226 and h116[1] <= h216[1] or h126 <= h226 and h126[1] > h226[1]
+tr27 = h127 > h227 and h117[1] <= h217[1] or h127 <= h227 and h127[1] > h227[1]
+tr28 = h128 > h228 and h118[1] <= h218[1] or h128 <= h228 and h128[1] > h228[1]
+tr29 = h129 > h229 and h119[1] <= h219[1] or h129 <= h229 and h129[1] > h229[1]
+tr30 = h130 > h230 and h120[1] <= h220[1] or h130 <= h230 and h130[1] > h230[1]
+tr31 = h131 > h231 and h111[1] <= h221[1] or h131 <= h231 and h131[1] > h231[1]
+tr32 = h132 > h232 and h112[1] <= h222[1] or h132 <= h232 and h132[1] > h232[1]
+tr33 = h133 > h233 and h113[1] <= h223[1] or h133 <= h233 and h133[1] > h233[1]
+tr34 = h134 > h234 and h114[1] <= h224[1] or h134 <= h234 and h134[1] > h234[1]
+tr35 = h135 > h235 and h115[1] <= h225[1] or h135 <= h235 and h135[1] > h235[1]
+tr36 = h136 > h236 and h116[1] <= h226[1] or h136 <= h236 and h136[1] > h236[1]
+tr37 = h137 > h237 and h117[1] <= h227[1] or h137 <= h237 and h137[1] > h237[1]
+tr38 = h138 > h238 and h118[1] <= h228[1] or h138 <= h238 and h138[1] > h238[1]
+tr39 = h139 > h239 and h119[1] <= h229[1] or h139 <= h239 and h139[1] > h239[1]
+tr40 = h140 > h240 and h120[1] <= h230[1] or h140 <= h240 and h140[1] > h240[1]
+
+up01 = h101 > h201
+dn01 = h101 < h201
+up02 = h102 > h202
+dn02 = h102 < h202
+up03 = h103 > h203
+dn03 = h103 < h203
+up04 = h104 > h204
+dn04 = h104 < h204
+up05 = h105 > h205
+dn05 = h105 < h205
+up06 = h106 > h206
+dn06 = h106 < h206
+up07 = h107 > h207
+dn07 = h107 < h207
+up08 = h108 > h208
+dn08 = h108 < h208
+up09 = h109 > h209
+dn09 = h109 < h209
+up10 = h110 > h210
+dn10 = h110 < h210
+up11 = h111 > h211
+dn11 = h111 < h211
+up12 = h112 > h212
+dn12 = h112 < h212
+up13 = h113 > h213
+dn13 = h113 < h213
+up14 = h114 > h214
+dn14 = h114 < h214
+up15 = h115 > h215
+dn15 = h115 < h215
+up16 = h116 > h216
+dn16 = h116 < h216
+up17 = h117 > h217
+dn17 = h117 < h217
+up18 = h118 > h218
+dn18 = h118 < h218
+up19 = h119 > h219
+dn19 = h119 < h219
+up20 = h120 > h220
+dn20 = h120 < h220
+up21 = h121 > h221
+dn21 = h121 < h221
+up22 = h122 > h222
+dn22 = h122 < h222
+up23 = h123 > h223
+dn23 = h123 < h223
+up24 = h124 > h224
+dn24 = h124 < h224
+up25 = h125 > h225
+dn25 = h125 < h225
+up26 = h126 > h226
+dn26 = h126 < h226
+up27 = h127 > h227
+dn27 = h127 < h227
+up28 = h128 > h228
+dn28 = h128 < h228
+up29 = h129 > h229
+dn29 = h129 < h229
+up30 = h130 > h230
+dn30 = h130 < h230
+up31 = h131 > h221
+dn31 = h131 < h231
+up32 = h132 > h222
+dn32 = h132 < h232
+up33 = h133 > h223
+dn33 = h133 < h233
+up34 = h134 > h224
+dn34 = h134 < h234
+up35 = h135 > h225
+dn35 = h135 < h235
+up36 = h136 > h226
+dn36 = h136 < h236
+up37 = h137 > h227
+dn37 = h137 < h237
+up38 = h138 > h228
+dn38 = h138 < h238
+up39 = h139 > h229
+dn39 = h139 < h239
+up40 = h140 > h230
+dn40 = h140 < h240
+
+pot_label = 'Posible Cambio de Tendencia: \n'
+pot_label := tr01 ? pot_label + t1 + '\n' : pot_label
+pot_label := tr02 ? pot_label + t2 + '\n' : pot_label
+pot_label := tr03 ? pot_label + t3 + '\n' : pot_label
+pot_label := tr04 ? pot_label + t4 + '\n' : pot_label
+pot_label := tr05 ? pot_label + t5 + '\n' : pot_label
+pot_label := tr06 ? pot_label + t6 + '\n' : pot_label
+pot_label := tr07 ? pot_label + t7 + '\n' : pot_label
+pot_label := tr08 ? pot_label + t8 + '\n' : pot_label
+pot_label := tr09 ? pot_label + t9 + '\n' : pot_label
+pot_label := tr10 ? pot_label + t10 + '\n' : pot_label
+pot_label := tr11 ? pot_label + t11 + '\n' : pot_label
+pot_label := tr12 ? pot_label + t12 + '\n' : pot_label
+pot_label := tr13 ? pot_label + t13 + '\n' : pot_label
+pot_label := tr14 ? pot_label + t14 + '\n' : pot_label
+pot_label := tr15 ? pot_label + t15 + '\n' : pot_label
+pot_label := tr16 ? pot_label + t16 + '\n' : pot_label
+pot_label := tr17 ? pot_label + t17 + '\n' : pot_label
+pot_label := tr18 ? pot_label + t18 + '\n' : pot_label
+pot_label := tr19 ? pot_label + t19 + '\n' : pot_label
+pot_label := tr20 ? pot_label + t20 + '\n' : pot_label
+pot_label := tr21 ? pot_label + t21 + '\n' : pot_label
+pot_label := tr22 ? pot_label + t22 + '\n' : pot_label
+pot_label := tr23 ? pot_label + t23 + '\n' : pot_label
+pot_label := tr24 ? pot_label + t24 + '\n' : pot_label
+pot_label := tr25 ? pot_label + t25 + '\n' : pot_label
+pot_label := tr26 ? pot_label + t26 + '\n' : pot_label
+pot_label := tr27 ? pot_label + t27 + '\n' : pot_label
+pot_label := tr28 ? pot_label + t28 + '\n' : pot_label
+pot_label := tr29 ? pot_label + t29 + '\n' : pot_label
+pot_label := tr30 ? pot_label + t30 + '\n' : pot_label
+pot_label := tr31 ? pot_label + t31 + '\n' : pot_label
+pot_label := tr32 ? pot_label + t32 + '\n' : pot_label
+pot_label := tr33 ? pot_label + t33 + '\n' : pot_label
+pot_label := tr34 ? pot_label + t34 + '\n' : pot_label
+pot_label := tr35 ? pot_label + t35 + '\n' : pot_label
+pot_label := tr36 ? pot_label + t36 + '\n' : pot_label
+pot_label := tr37 ? pot_label + t37 + '\n' : pot_label
+pot_label := tr38 ? pot_label + t38 + '\n' : pot_label
+pot_label := tr39 ? pot_label + t39 + '\n' : pot_label
+pot_label := tr40 ? pot_label + t40 + '\n' : pot_label
+
+scr_label = 'Cambio de Tendencia: \n'
+scr_label := tr01[1] ? scr_label + t1 + '\n' : scr_label
+scr_label := tr02[1] ? scr_label + t2 + '\n' : scr_label
+scr_label := tr03[1] ? scr_label + t3 + '\n' : scr_label
+scr_label := tr04[1] ? scr_label + t4 + '\n' : scr_label
+scr_label := tr05[1] ? scr_label + t5 + '\n' : scr_label
+scr_label := tr06[1] ? scr_label + t6 + '\n' : scr_label
+scr_label := tr07[1] ? scr_label + t7 + '\n' : scr_label
+scr_label := tr08[1] ? scr_label + t8 + '\n' : scr_label
+scr_label := tr09[1] ? scr_label + t9 + '\n' : scr_label
+scr_label := tr10[1] ? scr_label + t10 + '\n' : scr_label
+scr_label := tr11[1] ? scr_label + t11 + '\n' : scr_label
+scr_label := tr12[1] ? scr_label + t12 + '\n' : scr_label
+scr_label := tr13[1] ? scr_label + t13 + '\n' : scr_label
+scr_label := tr14[1] ? scr_label + t14 + '\n' : scr_label
+scr_label := tr15[1] ? scr_label + t15 + '\n' : scr_label
+scr_label := tr16[1] ? scr_label + t16 + '\n' : scr_label
+scr_label := tr17[1] ? scr_label + t17 + '\n' : scr_label
+scr_label := tr18[1] ? scr_label + t18 + '\n' : scr_label
+scr_label := tr19[1] ? scr_label + t19 + '\n' : scr_label
+scr_label := tr20[1] ? scr_label + t20 + '\n' : scr_label
+scr_label := tr21[1] ? scr_label + t21 + '\n' : scr_label
+scr_label := tr22[1] ? scr_label + t22 + '\n' : scr_label
+scr_label := tr23[1] ? scr_label + t23 + '\n' : scr_label
+scr_label := tr24[1] ? scr_label + t24 + '\n' : scr_label
+scr_label := tr25[1] ? scr_label + t25 + '\n' : scr_label
+scr_label := tr26[1] ? scr_label + t26 + '\n' : scr_label
+scr_label := tr27[1] ? scr_label + t27 + '\n' : scr_label
+scr_label := tr28[1] ? scr_label + t28 + '\n' : scr_label
+scr_label := tr29[1] ? scr_label + t29 + '\n' : scr_label
+scr_label := tr30[1] ? scr_label + t30 + '\n' : scr_label
+scr_label := tr31[1] ? scr_label + t31 + '\n' : scr_label
+scr_label := tr32[1] ? scr_label + t32 + '\n' : scr_label
+scr_label := tr33[1] ? scr_label + t33 + '\n' : scr_label
+scr_label := tr34[1] ? scr_label + t34 + '\n' : scr_label
+scr_label := tr35[1] ? scr_label + t35 + '\n' : scr_label
+scr_label := tr36[1] ? scr_label + t36 + '\n' : scr_label
+scr_label := tr37[1] ? scr_label + t37 + '\n' : scr_label
+scr_label := tr38[1] ? scr_label + t38 + '\n' : scr_label
+scr_label := tr39[1] ? scr_label + t39 + '\n' : scr_label
+scr_label := tr40[1] ? scr_label + t40 + '\n' : scr_label
+
+up_label = 'Tendencia Alcista: \n'
+up_label := up01[1] ? up_label + t1 + '\n' : up_label
+up_label := up02[1] ? up_label + t2 + '\n' : up_label
+up_label := up03[1] ? up_label + t3 + '\n' : up_label
+up_label := up04[1] ? up_label + t4 + '\n' : up_label
+up_label := up05[1] ? up_label + t5 + '\n' : up_label
+up_label := up06[1] ? up_label + t6 + '\n' : up_label
+up_label := up07[1] ? up_label + t7 + '\n' : up_label
+up_label := up08[1] ? up_label + t8 + '\n' : up_label
+up_label := up09[1] ? up_label + t9 + '\n' : up_label
+up_label := up10[1] ? up_label + t10 + '\n' : up_label
+up_label := up11[1] ? up_label + t11 + '\n' : up_label
+up_label := up12[1] ? up_label + t12 + '\n' : up_label
+up_label := up13[1] ? up_label + t13 + '\n' : up_label
+up_label := up14[1] ? up_label + t14 + '\n' : up_label
+up_label := up15[1] ? up_label + t15 + '\n' : up_label
+up_label := up16[1] ? up_label + t16 + '\n' : up_label
+up_label := up17[1] ? up_label + t17 + '\n' : up_label
+up_label := up18[1] ? up_label + t18 + '\n' : up_label
+up_label := up19[1] ? up_label + t19 + '\n' : up_label
+up_label := up20[1] ? up_label + t20 + '\n' : up_label
+up_label := up21[1] ? up_label + t21 + '\n' : up_label
+up_label := up22[1] ? up_label + t22 + '\n' : up_label
+up_label := up23[1] ? up_label + t23 + '\n' : up_label
+up_label := up24[1] ? up_label + t24 + '\n' : up_label
+up_label := up25[1] ? up_label + t25 + '\n' : up_label
+up_label := up26[1] ? up_label + t26 + '\n' : up_label
+up_label := up27[1] ? up_label + t27 + '\n' : up_label
+up_label := up28[1] ? up_label + t28 + '\n' : up_label
+up_label := up29[1] ? up_label + t29 + '\n' : up_label
+up_label := up30[1] ? up_label + t30 + '\n' : up_label
+up_label := up31[1] ? up_label + t31 + '\n' : up_label
+up_label := up32[1] ? up_label + t32 + '\n' : up_label
+up_label := up33[1] ? up_label + t33 + '\n' : up_label
+up_label := up34[1] ? up_label + t34 + '\n' : up_label
+up_label := up35[1] ? up_label + t35 + '\n' : up_label
+up_label := up36[1] ? up_label + t36 + '\n' : up_label
+up_label := up37[1] ? up_label + t37 + '\n' : up_label
+up_label := up38[1] ? up_label + t38 + '\n' : up_label
+up_label := up39[1] ? up_label + t39 + '\n' : up_label
+up_label := up40[1] ? up_label + t40 + '\n' : up_label
+
+dn_label = 'Tendencia Bajista: \n'
+dn_label := dn01[1] ? dn_label + t1 + '\n' : dn_label
+dn_label := dn02[1] ? dn_label + t2 + '\n' : dn_label
+dn_label := dn03[1] ? dn_label + t3 + '\n' : dn_label
+dn_label := dn04[1] ? dn_label + t4 + '\n' : dn_label
+dn_label := dn05[1] ? dn_label + t5 + '\n' : dn_label
+dn_label := dn06[1] ? dn_label + t6 + '\n' : dn_label
+dn_label := dn07[1] ? dn_label + t7 + '\n' : dn_label
+dn_label := dn08[1] ? dn_label + t8 + '\n' : dn_label
+dn_label := dn09[1] ? dn_label + t9 + '\n' : dn_label
+dn_label := dn10[1] ? dn_label + t10 + '\n' : dn_label
+dn_label := dn11[1] ? dn_label + t11 + '\n' : dn_label
+dn_label := dn12[1] ? dn_label + t12 + '\n' : dn_label
+dn_label := dn13[1] ? dn_label + t13 + '\n' : dn_label
+dn_label := dn14[1] ? dn_label + t14 + '\n' : dn_label
+dn_label := dn15[1] ? dn_label + t15 + '\n' : dn_label
+dn_label := dn16[1] ? dn_label + t16 + '\n' : dn_label
+dn_label := dn17[1] ? dn_label + t17 + '\n' : dn_label
+dn_label := dn18[1] ? dn_label + t18 + '\n' : dn_label
+dn_label := dn19[1] ? dn_label + t19 + '\n' : dn_label
+dn_label := dn20[1] ? dn_label + t20 + '\n' : dn_label
+dn_label := dn21[1] ? dn_label + t21 + '\n' : dn_label
+dn_label := dn22[1] ? dn_label + t22 + '\n' : dn_label
+dn_label := dn23[1] ? dn_label + t23 + '\n' : dn_label
+dn_label := dn24[1] ? dn_label + t24 + '\n' : dn_label
+dn_label := dn25[1] ? dn_label + t25 + '\n' : dn_label
+dn_label := dn26[1] ? dn_label + t26 + '\n' : dn_label
+dn_label := dn27[1] ? dn_label + t27 + '\n' : dn_label
+dn_label := dn28[1] ? dn_label + t28 + '\n' : dn_label
+dn_label := dn29[1] ? dn_label + t29 + '\n' : dn_label
+dn_label := dn30[1] ? dn_label + t30 + '\n' : dn_label
+dn_label := dn31[1] ? dn_label + t31 + '\n' : dn_label
+dn_label := dn32[1] ? dn_label + t32 + '\n' : dn_label
+dn_label := dn33[1] ? dn_label + t33 + '\n' : dn_label
+dn_label := dn34[1] ? dn_label + t34 + '\n' : dn_label
+dn_label := dn35[1] ? dn_label + t35 + '\n' : dn_label
+dn_label := dn36[1] ? dn_label + t36 + '\n' : dn_label
+dn_label := dn37[1] ? dn_label + t37 + '\n' : dn_label
+dn_label := dn38[1] ? dn_label + t38 + '\n' : dn_label
+dn_label := dn39[1] ? dn_label + t39 + '\n' : dn_label
+dn_label := dn40[1] ? dn_label + t40 + '\n' : dn_label
+
+
+f_colorscr(_valscr) =>
+    _valscr ? #00000000 : na
+f_printscr(_txtscr) =>
+    var _lblscr = label(na)
+    label.delete(_lblscr)
+    _lblscr := label.new(time + (time - time[1]) * posX_scr, ohlc4[posY_scr], _txtscr, xloc.bar_time, yloc.price, f_colorscr(showscr), textcolor=showscr ? col : na, size=size.normal, style=label.style_label_center)
+    _lblscr
+f_printscr(scr_label + '\n' + pot_label + '\n')
+//f_printscr ( scr_label + '\n' + pot_label + '\n' + up_label + '\n' + dn_label)
+
+// EMA
+
+EMA1 = input.int(660, minval=1, title='EMA')
+plot(ta.ema(close, EMA1), color=color.new(#FFFFFF, 0), linewidth=4)
